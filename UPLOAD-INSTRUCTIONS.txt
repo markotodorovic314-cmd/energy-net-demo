@@ -1,0 +1,14 @@
+ENERGY NET DEMO — GITHUB UPLOAD
+
+1. Raspakujte ZIP arhivu na računaru.
+2. Otvorite: https://github.com/markotodorovic314-cmd/energy-net-demo
+3. Kliknite "uploading an existing file" (ili Add file > Upload files).
+4. Prevucite SVE fajlove i foldere iz raspakovane arhive u GitHub prozor.
+5. U Commit message unesite: Publish Energy Net Partner Hub demo
+6. Potvrdite "Commit changes" direktno na main grani.
+7. Otvorite Settings > Pages.
+8. Pod Source izaberite "Deploy from a branch".
+9. Izaberite main i /(root), pa kliknite Save.
+
+Portal će biti dostupan na:
+https://markotodorovic314-cmd.github.io/energy-net-demo/index.html
