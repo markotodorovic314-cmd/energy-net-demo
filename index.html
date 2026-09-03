@@ -222,7 +222,8 @@ function parsePOItems(rawText){
   const upper=normalizePOText(line).toUpperCase(),compact=upper.replace(/[^A-Z0-9]/g,'');
   products.forEach(product=>{
    const sku=normalizePOText(product.sku).toUpperCase();
-   if(!upper.includes(sku)&&!compact.includes(sku.replace(/[^A-Z0-9]/g,'')))return;
+   const compactSku=sku.replace(/[^A-Z0-9]/g,''),compactName=normalizePOText(product.name).toUpperCase().replace(/[^A-Z0-9]/g,'');
+   if(!upper.includes(sku)&&!compact.includes(compactSku)&&!compact.includes(compactName))return;
    let working=upper.replace(sku,' ').replace(sku.replace(/-/g,' '),' ');
    working=working.replace(normalizePOText(product.name).toUpperCase(),' ');
    let match=working.match(/(?:QTY|QUANTITY|KOLICINA|KOM(?:ADA)?|PCS|UNITS?)[\s:=#-]*(\d{1,4})/i)||working.match(/(\d{1,4})\s*(?:KOM(?:ADA)?|PCS|UNITS?)\b/i)||working.match(/[Xx]\s*(\d{1,4})\b/);
