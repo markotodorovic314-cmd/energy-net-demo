@@ -13,6 +13,7 @@
 @media(max-width:1100px){.grid4{grid-template-columns:repeat(2,1fr)}.product-grid{grid-template-columns:repeat(3,1fr)}.split,.quick{grid-template-columns:1fr}.app{grid-template-columns:78px 1fr}.sidebar{padding:20px 10px}.logo .txt,.nav button span:not(.ico),.account div:not(.avatar),.nav-title,.mode{display:none}.logo{justify-content:center}.nav button{justify-content:center}.side-bottom{display:flex;justify-content:center}}
 @media(max-width:760px){body{overflow-x:hidden}.app{grid-template-columns:1fr}.sidebar{display:none;position:fixed;left:0;top:0;width:min(300px,86vw);height:100dvh;z-index:40;padding:18px 14px;overflow-y:auto;box-shadow:18px 0 45px rgba(0,0,0,.24)}.sidebar.mobile-open{display:flex}.main{width:100%;min-width:0}.topbar{height:72px;padding:0 12px;position:sticky;gap:8px}.topbar-left{gap:7px;flex:1;min-width:0}.mobile-menu-btn,.mobile-search-btn{display:inline-grid;min-width:44px;width:44px;height:44px;min-height:44px;padding:0;font-size:18px}.notification-btn{display:inline-grid!important;min-width:44px;width:44px;height:44px;min-height:44px;padding:0}.desktop-search,.support-btn{display:none}.mobile-role-switch{display:flex}.crumb{min-width:0;gap:6px}.crumb h1{font-size:15px;max-width:112px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crumb .tag{display:none}.top-actions{gap:5px}.mobile-search-sheet.show{display:block}.content{padding:18px 14px 42px;width:100%;max-width:100%;overflow-x:hidden}.search{width:100%}.search input{width:100%;max-width:100%}.filters{width:100%}.filters select{width:100%}.grid4{grid-template-columns:1fr}.two,.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.table{min-width:760px}.pagehead{align-items:flex-start;flex-direction:column;gap:12px}.pagehead>button{max-width:100%}.product-grid{grid-template-columns:1fr}.split,.quick{grid-template-columns:1fr}.summary{width:100%;max-width:100%}.orderline{grid-template-columns:44px minmax(0,1fr);gap:9px}.orderline>span,.orderline>strong,.orderline>div:nth-child(n+3){grid-column:2}.drawer{width:100vw}.drawer-body{padding:16px}.drawer-actions{flex-wrap:wrap}.drawer-actions .btn{flex:1;min-height:44px}.modal{width:calc(100vw - 20px)}.modal-body{padding:16px}.close{width:44px;height:44px}.cartbar{left:12px;right:12px;bottom:12px;justify-content:space-between}.toast{left:14px;right:14px;bottom:14px;text-align:center}.iconbtn,.btn{min-height:44px}.table-tools{align-items:flex-start;flex-direction:column}.table-tools>.small{align-self:flex-start}.mode{display:flex}input,select,textarea{font-size:16px}.qty button{min-height:44px}}
 @media(max-width:390px){.mobile-role-switch button{padding:6px 6px;font-size:8px}.topbar{padding:0 8px}.top-actions{gap:3px}.crumb h1{max-width:76px}.mobile-menu-btn,.mobile-search-btn,.notification-btn{width:42px;min-width:42px;height:42px;min-height:42px}}
+.dropzone.dragover{border-color:var(--brand);background:#fff9df}.po-file-status{min-height:20px;margin-top:12px}.po-file-status.working{color:var(--blue)}.po-file-status.success{color:var(--green);font-weight:700}.po-file-status.error{color:var(--red);font-weight:700}
 </style>
 </head>
 <body>
@@ -92,7 +93,13 @@
 <!-- quick order -->
 <section class="page" id="quick-order">
  <div class="pagehead"><div><h2>Brza porudžbina</h2><div class="sub">Dodajte više artikala po SKU-u ili ubacite narudžbenicu dobavljača.</div></div></div>
- <div class="quick"><div class="card"><div class="card-h"><h3>Masovni unos artikala</h3><button class="btn" onclick="addQuickRow()">+ Dodaj red</button></div><div class="card-b"><div id="quickRows"></div><div class="dropzone" style="margin-top:18px"><strong>Drop a purchase order here</strong><p>PDF, Excel, CSV, XML, TXT ili fotografija — demo parsiranje narudžbenice.</p><button class="btn" onclick="fakeParsePO()">Izaberi fajl</button></div></div></div><div class="card"><div class="card-h"><h3>Rezime</h3></div><div class="card-b"><div class="notice">Sistem proverava ugovorenu cenu, raspoloživost i kreditni limit pre slanja.</div><div id="quickSummary" style="margin-top:16px"></div><button class="btn primary" style="width:100%;margin-top:18px" onclick="quickToCart()">Dodaj sve u korpu</button></div></div></div>
+ <div class="quick"><div class="card"><div class="card-h"><h3>Masovni unos artikala</h3><button class="btn" onclick="addQuickRow()">+ Dodaj red</button></div><div class="card-b"><div id="quickRows"></div><div class="dropzone" id="poDropzone" style="margin-top:18px" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handlePODrop(event)">
+<strong>Prevucite narudžbenicu ovde</strong>
+<p>PDF, Excel, CSV, XML, TXT ili fotografija — automatsko čitanje SKU-a i količine.</p>
+<input id="poFileInput" type="file" accept=".pdf,.xlsx,.xls,.csv,.tsv,.xml,.txt,.png,.jpg,.jpeg,.webp,image/*" hidden onchange="handlePOFile(this.files[0]);this.value=''">
+<button class="btn" onclick="document.getElementById('poFileInput').click()">Izaberi fajl</button>
+<div id="poFileStatus" class="small po-file-status" aria-live="polite">SKU mora da postoji u demo katalogu. Fajl se obrađuje u browseru.</div>
+</div></div></div><div class="card"><div class="card-h"><h3>Rezime</h3></div><div class="card-b"><div class="notice">Sistem proverava ugovorenu cenu, raspoloživost i kreditni limit pre slanja.</div><div id="quickSummary" style="margin-top:16px"></div><button class="btn primary" style="width:100%;margin-top:18px" onclick="quickToCart()">Dodaj sve u korpu</button></div></div></div>
 </section>
 
 <section class="page" id="cart"><div class="pagehead"><div><h2>Korpa</h2><div class="sub">Proverite količine, isporuku i uslove pre slanja porudžbine.</div></div></div><div id="cartContent"></div></section>
@@ -184,7 +191,76 @@ function saveProduct(){const data={name:pName.value||'Novi proizvod',sku:pSku.va
 function addQuickRow(){const d=document.createElement('div');d.className='orderline';d.style.gridTemplateColumns='1fr 90px 100px';d.innerHTML=`<select class="quickSku" style="border:1px solid var(--line);border-radius:9px;padding:9px">${products.map(p=>`<option value="${p.id}">${p.sku} — ${p.name}</option>`).join('')}</select><input class="quickQty" type="number" value="1" min="1" style="border:1px solid var(--line);border-radius:9px;padding:9px"><button class="btn" onclick="this.parentElement.remove();renderQuickSummary()">Ukloni</button>`;d.querySelectorAll('select,input').forEach(x=>x.onchange=renderQuickSummary);document.getElementById('quickRows').appendChild(d);renderQuickSummary()}
 function renderQuickSummary(){const rows=[...document.querySelectorAll('#quickRows .orderline')];const items=rows.map(r=>({p:products.find(p=>p.id===+r.querySelector('.quickSku').value),q:+r.querySelector('.quickQty').value}));document.getElementById('quickSummary').innerHTML=items.length?items.map(x=>`<div class="mini"><span>${x.p.sku}<div class="small">${x.q} kom</div></span><strong>${money(x.p.price*x.q)}</strong></div>`).join(''):'<div class="small">Dodajte artikle.</div>'}
 function quickToCart(){[...document.querySelectorAll('#quickRows .orderline')].forEach(r=>{const pid=+r.querySelector('.quickSku').value,q=+r.querySelector('.quickQty').value,e=cart.find(x=>x.pid===pid);e?e.q+=q:cart.push({pid,q})});updateCart();showPage('cart')}
-function fakeParsePO(){document.getElementById('quickRows').innerHTML='';[[1,5],[4,1],[8,6]].forEach(([pid,q])=>{addQuickRow();const r=document.querySelector('#quickRows .orderline:last-child');r.querySelector('.quickSku').value=pid;r.querySelector('.quickQty').value=q});renderQuickSummary();toast('Demo PO prepoznat: 3 stavke su ubačene')}
+const poScriptPromises={};
+function setPOStatus(message,type){const el=document.getElementById('poFileStatus');if(!el)return;el.textContent=message;el.className='small po-file-status'+(type?' '+type:'')}
+function normalizePOText(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\u2010-\u2015\u2212]/g,'-').replace(/\u00a0/g,' ').trim()}
+function parseDelimitedLine(line,delimiter){const cells=[];let value='',quoted=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){value+='"';i++}else quoted=!quoted}else if(ch===delimiter&&!quoted){cells.push(value.trim());value=''}else value+=ch}cells.push(value.trim());return cells}
+function parsePOItems(rawText){
+ const text=normalizePOText(rawText).replace(/<\/(?:item|row|line|product|orderline)>/gi,'\n').replace(/<[^>]+>/g,' ');
+ const rawLines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ const found=new Map();
+ const add=(product,qty)=>{qty=Math.max(1,Math.min(999,Math.round(Number(qty)||1)));const current=found.get(product.id);found.set(product.id,{p:product,q:(current?current.q:0)+qty})};
+ const delimiters=['\t',';',',','|'];let bestDelimiter='',bestScore=0;
+ delimiters.forEach(d=>{const score=rawLines.slice(0,8).reduce((sum,line)=>sum+(line.split(d).length-1),0);if(score>bestScore){bestScore=score;bestDelimiter=d}});
+ if(bestDelimiter&&rawLines.length){
+  const rows=rawLines.map(line=>parseDelimitedLine(line,bestDelimiter));
+  const header=rows[0].map(x=>normalizePOText(x).toLowerCase().replace(/[^a-z0-9]+/g,''));
+  const skuIndex=header.findIndex(x=>['sku','sifra','artikl','artikel','itemcode','productcode','code'].includes(x));
+  const qtyIndex=header.findIndex(x=>['qty','quantity','kolicina','kom','komada','units','unit','amount'].includes(x));
+  const start=skuIndex>=0?1:0;
+  for(let i=start;i<rows.length;i++){
+   const cells=rows[i],joined=normalizePOText(cells.join(' ')).toUpperCase();
+   const product=products.find(p=>joined.includes(normalizePOText(p.sku).toUpperCase()));
+   if(!product)continue;
+   let qty=qtyIndex>=0?parseFloat(String(cells[qtyIndex]||'').replace(',','.')):NaN;
+   if(!Number.isFinite(qty)&&skuIndex>=0){for(let j=skuIndex+1;j<cells.length;j++){const n=Number(String(cells[j]).replace(',','.'));if(Number.isFinite(n)&&n>0&&n<=999){qty=n;break}}}
+   if(Number.isFinite(qty))add(product,qty);
+  }
+ }
+ if(found.size)return [...found.values()];
+ rawLines.forEach(line=>{
+  const upper=normalizePOText(line).toUpperCase(),compact=upper.replace(/[^A-Z0-9]/g,'');
+  products.forEach(product=>{
+   const sku=normalizePOText(product.sku).toUpperCase();
+   if(!upper.includes(sku)&&!compact.includes(sku.replace(/[^A-Z0-9]/g,'')))return;
+   let working=upper.replace(sku,' ').replace(sku.replace(/-/g,' '),' ');
+   working=working.replace(normalizePOText(product.name).toUpperCase(),' ');
+   let match=working.match(/(?:QTY|QUANTITY|KOLICINA|KOM(?:ADA)?|PCS|UNITS?)[\s:=#-]*(\d{1,4})/i)||working.match(/(\d{1,4})\s*(?:KOM(?:ADA)?|PCS|UNITS?)\b/i)||working.match(/[Xx]\s*(\d{1,4})\b/);
+   let qty=match?Number(match[1]):NaN;
+   if(!Number.isFinite(qty)){const nums=[...working.matchAll(/(?:^|[\s,;|\t])(\d{1,4})(?=$|[\s,;|\t])/g)].map(m=>Number(m[1])).filter(n=>n>0&&n<=999);qty=nums[0]}
+   add(product,Number.isFinite(qty)?qty:1);
+  });
+ });
+ return [...found.values()];
+}
+function loadPOScript(src,globalName){if(window[globalName])return Promise.resolve(window[globalName]);if(poScriptPromises[src])return poScriptPromises[src];poScriptPromises[src]=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=src;script.crossOrigin='anonymous';script.onload=()=>window[globalName]?resolve(window[globalName]):reject(new Error('Biblioteka nije učitana'));script.onerror=()=>reject(new Error('Nije moguće učitati modul za ovaj format'));document.head.appendChild(script)});return poScriptPromises[src]}
+async function runPOOCR(source,label){await loadPOScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js','Tesseract');const result=await window.Tesseract.recognize(source,'eng',{logger:m=>{if(m.status==='recognizing text')setPOStatus(label+' — OCR '+Math.round((m.progress||0)*100)+'%','working')}});return result&&result.data?result.data.text:''}
+async function extractPDFText(file){
+ await loadPOScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js','pdfjsLib');
+ window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ const pdf=await window.pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,pages=[];
+ for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){setPOStatus('Čitam PDF stranu '+pageNo+'/'+pdf.numPages+'…','working');const page=await pdf.getPage(pageNo),content=await page.getTextContent(),rows={};(content.items||[]).forEach(item=>{const y=Math.round(item.transform&&item.transform[5]||0);(rows[y]||(rows[y]=[])).push(item.str)});pages.push(Object.keys(rows).map(Number).sort((a,b)=>b-a).map(y=>rows[y].join(' ')).join('\n'))}
+ const text=pages.join('\n');if(text.replace(/\s/g,'').length>20)return text;
+ const limit=Math.min(pdf.numPages,3),ocrPages=[];
+ for(let pageNo=1;pageNo<=limit;pageNo++){const page=await pdf.getPage(pageNo),viewport=page.getViewport({scale:1.8}),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:ctx,viewport}).promise;ocrPages.push(await runPOOCR(canvas,'Skenirana PDF strana '+pageNo+'/'+limit))}
+ return ocrPages.join('\n');
+}
+async function extractPOText(file){
+ const ext=(file.name.split('.').pop()||'').toLowerCase();
+ if(['txt','csv','tsv','xml'].includes(ext)||file.type.startsWith('text/'))return file.text();
+ if(['xlsx','xls'].includes(ext)){setPOStatus('Čitam Excel tabelu…','working');await loadPOScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','XLSX');const workbook=window.XLSX.read(await file.arrayBuffer(),{type:'array'});return workbook.SheetNames.map(name=>window.XLSX.utils.sheet_to_csv(workbook.Sheets[name],{FS:'\t',RS:'\n'})).join('\n')}
+ if(ext==='pdf'||file.type==='application/pdf')return extractPDFText(file);
+ if(file.type.startsWith('image/')||['png','jpg','jpeg','webp'].includes(ext))return runPOOCR(file,'Čitam fotografiju');
+ throw new Error('Nepodržan format. Izaberite PDF, Excel, CSV, XML, TXT ili fotografiju.');
+}
+function populateQuickRows(items){const root=document.getElementById('quickRows');root.innerHTML='';items.forEach(item=>{addQuickRow();const row=root.lastElementChild;row.querySelector('.quickSku').value=item.p.id;row.querySelector('.quickQty').value=item.q});renderQuickSummary()}
+async function handlePOFile(file){
+ if(!file)return;if(file.size>15*1024*1024){setPOStatus('Fajl je veći od 15 MB. Izaberite manji dokument.','error');return}
+ setPOStatus('Čitam '+file.name+'…','working');
+ try{const text=await extractPOText(file),items=parsePOItems(text);if(!items.length)throw new Error('Nisam pronašao nijedan SKU iz demo kataloga. Proverite da dokument sadrži šifru artikla i količinu.');populateQuickRows(items);const total=items.reduce((sum,item)=>sum+item.q,0);setPOStatus('Prepoznato: '+items.length+' artikala, ukupno '+total+' kom · '+file.name,'success');toast('Narudžbenica je pročitana i stavke su ubačene')}
+ catch(error){console.error(error);setPOStatus(error.message||'Fajl nije moguće pročitati.','error');toast('Fajl nije prepoznat')}
+}
+function handlePODrop(event){event.preventDefault();event.currentTarget.classList.remove('dragover');const file=event.dataTransfer&&event.dataTransfer.files?event.dataTransfer.files[0]:null;if(file)handlePOFile(file)}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2600)}
 document.getElementById('catalogSearch').addEventListener('input',filterCatalog);document.getElementById('catalogCategory').addEventListener('change',filterCatalog);function filterCatalog(){const q=catalogSearch.value.toLowerCase(),c=catalogCategory.value;document.querySelectorAll('#productGrid .product').forEach((el,i)=>el.style.display=((!q||el.dataset.name.includes(q))&&(!c||products[i].cat===c))?'block':'none')}
 document.getElementById('productAdminSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();[...document.querySelectorAll('#productsBody tr')].forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none')});document.getElementById('orderSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();[...document.querySelectorAll('#adminOrdersBody tr')].forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none')});document.getElementById('partnerOrderSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();[...document.querySelectorAll('#partnerOrdersBody tr')].forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none')});document.getElementById('partnerSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();[...document.querySelectorAll('#partnersBody tr')].forEach(tr=>tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none')});
